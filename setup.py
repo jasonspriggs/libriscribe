@@ -16,6 +16,9 @@ setup(
         "markdown",
         "fpdf",
         "tenacity",
+        "anthropic",
+        "google-generativeai",
+        "rich",
     ],
     entry_points={
         "console_scripts": [
