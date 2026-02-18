@@ -6,8 +6,9 @@ from tenacity import retry, stop_after_attempt, wait_random_exponential
 from libriscribe.settings import Settings
 
 import anthropic  # For Claude
-import google.generativeai as genai  # For Google AI Studio
+from google import genai  # For Google AI Studio
 import requests  # For DeepSeek and Mistral
+import re
 
 # ADDED THIS: Import the function
 from libriscribe.utils.file_utils import extract_json_from_markdown
@@ -46,8 +47,7 @@ class LLMClient:
         elif self.llm_provider == "google_ai_studio":
             if not self.settings.google_ai_studio_api_key:
                 raise ValueError("Google AI Studio API key is not set.")
-            genai.configure(api_key=self.settings.google_ai_studio_api_key)
-            return genai  # We don't instantiate a client, we use the module directly
+            return genai.Client(api_key=self.settings.google_ai_studio_api_key)
         elif self.llm_provider == "deepseek":
              if not self.settings.deepseek_api_key:
                 raise ValueError("DeepSeek API key is not set.")
@@ -114,8 +114,14 @@ class LLMClient:
                 return response.content[0].text.strip()
 
             elif self.llm_provider == "google_ai_studio":
-                model = self.client.GenerativeModel(model_name=self.model)
-                response = model.generate_content(prompt) # No need for messages list with genai
+                response = self.client.models.generate_content(
+                    model=self.model,
+                    contents=prompt,
+                    config=genai.types.GenerateContentConfig(
+                        temperature=temperature,
+                        max_output_tokens=max_tokens
+                    )
+                )
                 return response.text.strip()
 
             elif self.llm_provider == "deepseek":
