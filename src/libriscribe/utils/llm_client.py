@@ -68,7 +68,7 @@ class LLMClient:
         elif self.llm_provider == "claude":
             return "claude-3-opus-20240229" # Or another appropriate Claude 3 model
         elif self.llm_provider == "google_ai_studio":
-            return "gemini-1.5-pro-002"
+            return "gemini-3.5-pro"
         elif self.llm_provider == "deepseek":
              return "deepseek-coder-6.7b-instruct"
         elif self.llm_provider == "mistral":
